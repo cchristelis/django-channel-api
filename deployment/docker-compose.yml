@@ -8,96 +8,24 @@
 
 # Our main nginx service - this is for testing only - normally
 # You would use a standalone nginx instance running on the host!
-db:
-  # Note you cannot scale if you use conteiner_name
-  container_name: channel-api-db
-  image: kartoza/postgis:9.4-2.1
-  volumes:
-    - ./pg/postgres_data:/var/lib/postgresql
-    - ./backups:/backups
-  environment:
-    - USERNAME=docker
-    - PASS=docker
-  restart: always
 
-uwsgi-base:
-  # Note you cannot scale if you use conteiner_name
-  build: docker
-  hostname: uwsgi
-  environment:
-    - DATABASE_NAME=gis
-    - DATABASE_USERNAME=docker
-    - DATABASE_PASSWORD=docker
-    - DATABASE_HOST=db
-    - RABBITMQ_HOST=rabbitmq
-    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
-    - VIRTUAL_HOST=channel-api.kartoza.com
-    - VIRTUAL_PORT=8080
-    # Set your locale - you need to ensure this is created in Dockerfile too...
-    - LC_ALL=en_ZA.UTF-8
-  volumes:
-    - ../django_project:/home/web/django_project
-    - ./static:/home/web/static:rw
-    - ./media:/home/web/media:rw
-    - ./reports:/home/web/reports
-    - ./logs:/var/log/
-  user: root
-
-uwsgi-ephemeral:
-  extends: uwsgi-base
-  links:
-    - db:db
-    - redis:redis
-  user: root
-  restart: on-failure:5
-
-web:
-  # Note you cannot scale if you use conteiner_name
-  extends: uwsgi-base
-  container_name: channel-api-web
-  command: python manage.py runserver 0.0.0.0:8080
-  links:
-    - db:db
-    - redis:redis
-  restart: always
-  ports:
-    # for django test server
-    - "64205:8080"
 
 redis:
   image: redis
   container_name: channel-redis
 
-# This is the entry point for a development server.
-# Run with --no-deps to run attached to the services
-# from produ environment if wanted
-devweb:
-  # Note you cannot scale if you use conteiner_name
-  container_name: channel-api-dev-web
+daphne:
+  container_name: channels
   build: docker
-  dockerfile: Dockerfile-dev
-  hostname: channel-api-dev-web
-  environment:
-    - DATABASE_NAME=gis
-    - DATABASE_USERNAME=docker
-    - DATABASE_PASSWORD=docker
-    - DATABASE_HOST=db
-    - RABBITMQ_HOST=rabbitmq
-    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
-    - PYTHONPATH=/home/web/django_project
-    - VIRTUAL_HOST=channel-api.kartoza.com
-    - VIRTUAL_PORT=8080
+  dockerfile: Dockerfile
+  hostname: channels
   volumes:
     - ../django_project:/home/web/django_project
-    - ./static:/home/web/static
-    - ./media:/home/web/media
-    - ./reports:/home/web/reports
-    - ./logs:/var/log/
+    - ../media:/home/web/media
+    - ../static:home/web/static
   links:
-    - db:db
     - redis:redis
+  restart: on-failure:5
   ports:
     # for django test server
-    - "64202:8080"
-    # for ssh
-    - "64203:22"
+    - "64205:8080"

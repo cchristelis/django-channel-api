@@ -1,19 +1,7 @@
 celery
-Django>=1.8,<1.9
-django-compressor
-django-sentry==1.13.5
-filebrowser-safe==0.4.5
-html5lib==0.9999999
-OWSLib==0.12
-psycopg2
-raven==5.8.1
-requests==2.0.0
-
-#channel
+Django>=1.10,<1.11
 channels
 asgi_redis
-
-#Rest Framework API
+Twisted[tls,http2]
 djangorestframework>=3.2,<3.7
-#channel_api
-git+git://github.com/euclidian/django-channel-api-module.git
+daphne

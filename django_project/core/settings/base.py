@@ -8,7 +8,7 @@ from __future__ import absolute_import, unicode_literals
 from .utils import absolute_path
 
 ADMINS = (
-    ('Muhammad Anis', 'anis@kartoza.com')
+    ('Christian Christelis', 'christian@kartoza.com')
 )
 
 MANAGERS = ADMINS
@@ -60,14 +60,6 @@ STATIC_ROOT = '/home/web/static'
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
-
-# Additional locations of static files
-STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    # absolute_path('core', 'basstatic'),
-)
 
 # List of finder classes that know how to find static files in
 # various locations.
